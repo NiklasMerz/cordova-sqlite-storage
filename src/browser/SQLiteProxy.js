@@ -132,12 +132,31 @@ function deleteDatabase(success, error, options) {
   setTimeout(success, 0);
 }
 
+function exportDb(success, error, options) {
+  var dbname = options[0].path;
+  var db = dbmap[dbname];
+
+  var data = db.export();
+  var buffer = new Buffer(data);
+
+  setTimeout(success(buffer), 0);
+}
+
+function importDb(buffer, success, error, options) {
+  var dbname = options[0].path;
+  dbmap[dbname] =  new SQL.Database(buffer);
+
+  setTimeout(success, 0);
+}
+
 module.exports = {
   echoStringValue: echoStringValue,
   open: openDatabase,
   backgroundExecuteSqlBatch: backgroundExecuteSqlBatch,
   close: closeDatabase,
-  delete: deleteDatabase
+  delete: deleteDatabase,
+  exportDb: exportDb,
+  importDb: importDb,
 }
 
 require('cordova/exec/proxy').add('SQLitePlugin', module.exports);
